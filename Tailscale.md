@@ -22,6 +22,19 @@ sudo tailscale set \
 sudo tailscale set \
 --advertise-exit-node \
 --advertise-routes=192.168.1.0/24,192.168.2.0/24
+
+
+#4. Aprove no painel
+
+Abra Tailscale Admin — Machines, encontre o Raspberry Pi e:
+
+Abra o menu ….
+Entre em Edit route settings.
+Ative Use as exit node.
+Marque todas as sub-redes anunciadas.
+Salve.
+
+Exit nodes e rotas precisam ser autorizados por um administrador antes de poderem ser utilizados
     
 
 
