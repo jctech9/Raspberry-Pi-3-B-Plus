@@ -1,6 +1,6 @@
 # Uptime Kuma — instalação com Docker
 
-Execute os blocos na ordem. Todos os comandos precisam de `sudo`.
+Execute os blocos na ordem. Use `sudo` conforme indicado.
 
 ## 1. Atualizar o sistema
 
@@ -28,22 +28,31 @@ sudo docker compose version
 
 ## 3. Criar a configuração do Uptime Kuma
 
+O segundo comando está codificado em Base64 para impedir que o terminal altere
+a indentação ou tente executar as linhas do arquivo YAML separadamente. Copie e
+execute a linha inteira de uma só vez.
+
 ```bash
 sudo mkdir -p /opt/uptime-kuma
-sudo tee /opt/uptime-kuma/compose.yaml >/dev/null <<'EOF'
-services:
-  uptime-kuma:
-    image: louislam/uptime-kuma:2
-    container_name: uptime-kuma
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    volumes:
-      - uptime-kuma-data:/app/data
 
-volumes:
-  uptime-kuma-data:
-EOF
+```
+
+```bash
+printf '%s' 'c2VydmljZXM6CiAgdXB0aW1lLWt1bWE6CiAgICBpbWFnZTogbG91aXNsYW0vdXB0aW1lLWt1bWE6MgogICAgY29udGFpbmVyX25hbWU6IHVwdGltZS1rdW1hCiAgICByZXN0YXJ0OiB1bmxlc3Mtc3RvcHBlZAogICAgcG9ydHM6CiAgICAgIC0gIjMwMDE6MzAwMSIKICAgIHZvbHVtZXM6CiAgICAgIC0gdXB0aW1lLWt1bWEtZGF0YTovYXBwL2RhdGEKCnZvbHVtZXM6CiAgdXB0aW1lLWt1bWEtZGF0YToKICAgIG5hbWU6IHVwdGltZS1rdW1hLWRhdGEK' | base64 -d | sudo tee /opt/uptime-kuma/compose.yaml >/dev/null
+
+```
+
+Confira se o arquivo foi criado corretamente:
+
+```bash
+sudo cat /opt/uptime-kuma/compose.yaml
+
+```
+
+Valide a configuração antes de iniciar o contêiner:
+
+```bash
+sudo docker compose -f /opt/uptime-kuma/compose.yaml config >/dev/null && echo "Configuração válida"
 
 ```
 
@@ -106,7 +115,7 @@ Use `Ctrl+C` para sair dos logs sem interromper o Uptime Kuma.
 ```bash
 sudo docker compose -f /opt/uptime-kuma/compose.yaml stop
 sudo docker run --rm \
-  -v uptime-kuma_uptime-kuma-data:/data:ro \
+  -v uptime-kuma-data:/data:ro \
   -v /opt/uptime-kuma:/backup \
   alpine sh -c 'tar -czf /backup/uptime-kuma-backup.tar.gz -C /data .'
 sudo docker compose -f /opt/uptime-kuma/compose.yaml start
@@ -122,4 +131,3 @@ O backup será salvo em:
 > **Nota:** a porta `3001` ficará acessível na rede local. Para acesso pela
 > internet, prefira usar uma VPN como o Tailscale em vez de encaminhar essa
 > porta diretamente no roteador.
-
